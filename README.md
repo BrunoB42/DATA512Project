@@ -30,7 +30,7 @@ The analysis notebook can be found at [SmokeAsthmaAnalysis.ipynb](SmokeAsthmaAna
 
 #### LDH Asthma Hospitalization Dataset
 
-In the `data_sources` folder, the `caddo_asthma_outcomes.csv` file contains the annual asthma hospitalization data sourced from the Louisiana Department of Health's [Health Data Explorer](https://healthdata.ldh.la.gov/). This data is used in modelling to predict future asthma hospitalization rates in Shreveport after accounting for forecasted smoke impacts.
+In the `data_sources` folder, the `caddo_asthma_outcomes.csv` file contains the annual asthma hospitalization data sourced from the Louisiana Department of Health's [Health Data Explorer](https://healthdata.ldh.la.gov/). This data is used in modelling to predict future asthma hospitalization rates in Shreveport after accounting for forecasted smoke impacts. This dataset is used under its stated requirements that its data be used for statistical reporting and analysis only, without disclosing the identity of anyone involved in the dataset, and without claiming any interpretations to be the official conclusions of the state of Louisiana.
 
 The two attributes of the asthma hospitalization data used in this analysis are:
 
