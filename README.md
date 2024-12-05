@@ -24,27 +24,55 @@ The complete project report can be found at the file [ShreveportSmokeAsthmaRepor
 
 The analysis notebook can be found at [SmokeAsthmaAnalysis.ipynb](SmokeAsthmaAnalysis.ipynb)
 
-**Note:** The notebook will require the user to provide a valid AQS API key before being able to fully run. The notebook details the steps necessary to obtain this. Running the notebook is expected to take approximately 10 minutes in total.
+**Note:** The notebook will require the user to provide a valid AQS API key before being able to fully run. The notebook details the steps necessary to obtain this. Running the notebook is expected to take approximately 10 minutes.
 
 ## Data Sourcing
 
+#### LDH Asthma Hospitalization Dataset
+
+In the `data_sources` folder, the `caddo_asthma_outcomes.csv` file contains the annual asthma hospitalization data sourced from the Louisiana Department of Health's [Health Data Explorer](https://healthdata.ldh.la.gov/). This data is used in modelling to predict future asthma hospitalization rates in Shreveport after accounting for forecasted smoke impacts.
+
+The two attributes of the asthma hospitalization data used in this analysis are:
+
+- `Year`: Numeric value denoting the year of the associated asthma rate measurement
+- `Asthma_Rate`: Numeric value denoting the number of asthma hospitalizations per 10,000 people in Caddo parish
+
 #### EPA AQS API
 
-In this analysis, data from the [United States Environmental Protection Agency's publicly available AQS API](https://aqs.epa.gov/aqsweb/documents/data_api.html) was obtained in order to estimate the daily and yearly air quality index, or AQI, for Shreveport, LA. In order to request information on the active monitoring stations in the area, the Federal Information Processing Series, or FIPS, code for the region is required. In addition to this, an API key is required in order to be able to make requests. The documentation details how to request an API key.
+In the `SmokeAsthmaAnalysis.ipynb` notebook, data from the [United States Environmental Protection Agency's publicly available AQS API](https://aqs.epa.gov/aqsweb/documents/data_api.html) is obtained in order to estimate the daily and yearly air quality index, or AQI, for Shreveport, LA. In order to request information on the active monitoring stations in the area, the Federal Information Processing Series, or FIPS, code for the region is required. The FIPS code for Shreveport’s parish is provided in the notebook. In addition to this, an API key is required in order to be able to make requests. The above AQS API documentation details how to request an API key.
 
-Data from the Caddo parish that Shreveport is located in was obtained for the last 60 years (1964 - 2024) from three different active monitoring stations in the region. (Note: Louisiana is divided into parishes, not counties like other U.S. states)
+Seven of the air quality data attributes were used in this analysis:
 
-Despite the fact that 60 years of data were requested, only 39 years of data were used to obtain AQI estimates in Part 1, as Shreveport did not have particulate data before 1985.
+- `site_number`: Unique numeric ID for the location with the air quality monitoring sensor.
+- `parameter_code`: 5-digit code identifying the air pollutant being measured.
+- `poc`: ID used to distinguish between two different sensors at the same location measuring the same pollutant.
+- `latitude`: Latitude of the measuring site
+- `longitude`: Longitude of the measuring site
+- `date_local`: Local date at time of measurement
+- `aqi`: Measured AQI value for the specified pollutant
+
+Data from the Caddo parish that Shreveport is located in was obtained for the fire season (5/1 – 10/31) for last 60 years (1964 - 2024) from four different active monitoring stations in the region. (Note: Louisiana is divided into parishes, not counties). Despite the fact that 60 years of data were requested, only 41 years of data were used to obtain AQI estimates in Part 1, as Shreveport did not have particulate data before 1983.
 
 #### Wildland Fire Dataset
 
-The [U.S. Geological Survey's Wildland Fire dataset](https://www.sciencebase.gov/catalog/item/61aa537dd34eb622f699df81) was used to generate estimates of smoke impacts on Shreveport from 1964 to 2021. This dataset comes in multiple formats but the cleaned, "combined" layer of its geodatabase file was the only one used for this analysis as it contains fully curated data for both wildfires and prescribed controlled burns. Both are relevant to the estimation of smoke impacts. While this dataset contains data for the entire U.S., only the area surrounding Shreveport was used in the analysis.
+This analysis utilizes wildfire data obtained from the U.S. Geological Survey’s wildland fire dataset. This data is a large-scale geospatial dataset that combines 40 disparate fire datasets in order to describe the type, time, area, and location of fires in the United from the 1850s to 2021. It is provided  through the USGS ScienceBase Catalog under the title Combined wildland fire datasets for the United States and certain territories, 1800s-Present (combined wildland fire polygons). This dataset comes in multiple formats but the cleaned, "combined" layer of its geodatabase file was the only one used for this analysis as it contains fully curated data for both wildfires and prescribed controlled burns. Both are relevant to the estimation of smoke impacts. 
 
-The citation for the initial publication of this dataset is as follows:
+While this dataset contains long-term data for the entire U.S., only data from the past 60 years (1964-2021) within 650 miles of Shreveport that occurred during the fire season (5/1 – 10/31) were utilized in this analysis. The filtering of the dataset by these three constraints is performed within the analysis notebook and does not need to be performed ahead of time.
+
+Six of the wildfire data attributes were used in this analysis:
+
+- `USGS_Assigned_ID`: The unique numeric for each fire. Used as the key in the dataset.
+- `Assigned_Fire_Type`: A string containing the type of fire assigned to each entry. String values lie on an five-value ordinal scale varying between `"Prescribed Fire"` and `"Wildfire"` describing the degree to which the fire is likely to be uncontrolled. Used to model hazard level of a fire.
+- `Fire_Year`: The year in which the fire occured. Used to aggregate fire data entries to the correct year.
+- `Listed_Fire_Dates`: An unstructured list of labelled dates describing the time at which various aspects of the fire occured such as the Ignition Date or Prescribed Fire Start Date as applicable for each fire. Used to calculate the most likely start and end dates for each fire entry.
+- `Shape_Area`: The geospatial data entry describing the area of the fire. Used to calcuate smoke output based on fire size.
+- The coordinate value innately associated with each geospatial fire entry: Used to calculate the distnce between each fire and Shreveport.
+
+This dataset is made freely available to the public in its initial release, which is cited as:
 
 Welty, J.L., and Jeffries, M.I., 2021, Combined wildland fire datasets for the United States and certain territories, 1800s-Present: U.S. Geological Survey data release, https://doi.org/10.5066/P9ZXGFY3.
 
-NOTE: `Part1CommonAnalysis.ipynb` will expect this data to be placed in a folder titled `wildfire_data`
+**Note:** `SmokeAsthmaAnalysis.ipynb` will expect this data to be placed in the folder `data_sources/wildfire_data` in gdb format, as it is too large to be reasonably stored in the GitHub repository.
 
 #### Generated Files
 
@@ -60,9 +88,9 @@ The functions `get_first_dates`, `get_last_dates`, and `overlap_with_fire_season
 
 #### Asthma Data Limitations
 
-When attempting to find usable data for modelling asthma hospitalizations in the area, this analysis ran into the simple fact that asthma hospitalizations are poorly documented compared to mortality.
+When attempting to find usable data for modelling asthma hospitalizations in the area, this analysis ran into the complication that asthma hospitalizations are poorly documented compared to mortality.
 
-As hospitalization is likely to have significant physical and financial implications for anyone following an asthma attack, it was important to this analysis that this data be the focus of the project’s modelling. Asthma mortality data fails to capture the true extent of the burden that poor air quality imposes upon people living with asthma and focuses instead on the extremes at which life-threatening complications can occur. Overall, a poor metric for understanding the real human impact of air quality on the citizens of Shreveport.
+As hospitalization is likely to have significant physical and financial implications for anyone following an asthma attack, it was important to this analysis that this data be the focus of the project’s modelling. Asthma mortality data fails to capture the true extent of the burden that poor air quality imposes upon people living with asthma and focuses instead on the extremes at which life-threatening complications can occur. Overall, it would be a poor metric for understanding the real human impact of air quality on the citizens of Shreveport.
 
 However, the only available source for asthma hospitalizations in the area that did not group it under a blanket category of “respiratory illnesses” that included COVID-19 was the in-progress dataset published by the Louisiana Department of Health. This dataset has the significant issue of only covering yearly asthma hospitalization rates and only from the years 2000 – 2020. In addition to this, the data from 2016-2020 is openly stated to be poorly characterized and subject to greater uncertainty both due to the advent of COVID-19 and due to incomplete data collection. As such, the predictive modelling was performed with only the well-characterized data from 2000-2015. This had the potential to limit the forecasting capability of the model significantly, though the direction of its predictions still largely agreed with more recent findings.
 
