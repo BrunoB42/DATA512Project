@@ -66,7 +66,7 @@ Six of the wildfire data attributes were used in this analysis:
 - `Fire_Year`: The year in which the fire occured. Used to aggregate fire data entries to the correct year.
 - `Listed_Fire_Dates`: An unstructured list of labelled dates describing the time at which various aspects of the fire occured such as the Ignition Date or Prescribed Fire Start Date as applicable for each fire. Used to calculate the most likely start and end dates for each fire entry.
 - `Shape_Area`: The geospatial data entry describing the area of the fire. Used to calcuate smoke output based on fire size.
-- The coordinate value innately associated with each geospatial fire entry: Used to calculate the distnce between each fire and Shreveport.
+- The coordinate value innately associated with each geospatial fire entry: Used to calculate the distance between each fire and Shreveport.
 
 This dataset is made freely available to the public in its initial release, which is cited as:
 
